@@ -1,0 +1,40 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build output
+dist/
+build/
+.next/
+out/
+coverage/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Editor/OS
+.DS_Store
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# Testing
+/testing/**/__snapshots__/
+.nyc_output/
+
+# Infra state (never commit)
+infrastructure/terraform/**/*.tfstate
+infrastructure/terraform/**/*.tfstate.backup
+infrastructure/terraform/**/.terraform/
+
+# Secrets (defense in depth — see docs/security/SECRET_MANAGEMENT.md)
+*.pem
+*.key
+secrets.*

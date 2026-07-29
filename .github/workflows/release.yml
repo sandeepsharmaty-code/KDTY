@@ -1,0 +1,20 @@
+name: Release Pipeline (Structure Only)
+
+# Sprint 1.9: pipeline STRUCTURE only. This workflow intentionally does not
+# deploy anything — no production deployment occurs in Sprint 1.
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  release-gate:
+    name: Release Gate (no-op in Sprint 1)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Explicitly block deployment in Sprint 1
+        run: |
+          echo "Release pipeline structure established per Sprint 1.9."
+          echo "No deployment target is configured. Production deploys are out of scope for Sprint 1."
+          exit 0

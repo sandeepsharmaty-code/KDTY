@@ -1,0 +1,10 @@
+{
+  "name": "@hmb/shared",
+  "version": "0.1.0",
+  "private": true,
+  "main": "src/index.ts",
+  "scripts": {
+    "lint": "eslint . --config ../config/eslint/.eslintrc.base.json",
+    "test": "echo 'placeholder: shared unit tests'"
+  }
+}

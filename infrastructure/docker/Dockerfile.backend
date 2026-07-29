@@ -1,0 +1,34 @@
+# Sprint 9 — Production backend image. Did not exist before this
+# sprint (infrastructure/docker/docker-compose.yml is explicitly
+# "Local development infrastructure only" per its own Sprint 1
+# comment). Multi-stage build: install+build in a full Node image,
+# run in a slim one, so the shipped image doesn't carry devDependencies
+# or build tooling.
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY package*.json ./
+# Sprint 9 finding (see SECURITY_HARDENING_CHECKLIST.md): no
+# package-lock.json exists yet in this repo. `npm ci` (the reproducible,
+# lockfile-enforced install command) is used here deliberately — it
+# will correctly FAIL until a real lockfile is generated in a real
+# environment, rather than silently falling back to `npm install`'s
+# non-reproducible resolution. That failure is the intended behavior,
+# not a bug in this Dockerfile.
+RUN npm ci
+COPY . .
+RUN npm run build
+
+FROM node:20-alpine AS runtime
+WORKDIR /app
+ENV NODE_ENV=production
+RUN addgroup -S hmb && adduser -S hmb -G hmb
+COPY package*.json ./
+RUN npm ci --omit=dev
+COPY --from=builder /app/dist ./dist
+USER hmb
+EXPOSE 4000
+# Sprint 3's HealthController (/v1/health/ready) — used here, not a
+# new endpoint invented for this Dockerfile.
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
+  CMD node -e "require('http').get('http://localhost:4000/v1/health/ready', r => process.exit(r.statusCode === 200 ? 0 : 1)).on('error', () => process.exit(1))"
+CMD ["node", "dist/main.js"]

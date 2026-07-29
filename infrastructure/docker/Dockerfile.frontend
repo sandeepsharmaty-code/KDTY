@@ -1,0 +1,23 @@
+# Sprint 9 — Production frontend image. Requires Next.js standalone
+# output mode — confirmed and added to next.config.mjs as part of this
+# same sprint (it was not set before; the first version of this
+# Dockerfile would have failed against the actual repo state).
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+FROM node:20-alpine AS runtime
+WORKDIR /app
+ENV NODE_ENV=production
+RUN addgroup -S hmb && adduser -S hmb -G hmb
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+USER hmb
+EXPOSE 3000
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
+  CMD node -e "require('http').get('http://localhost:3000/', r => process.exit(r.statusCode < 500 ? 0 : 1)).on('error', () => process.exit(1))"
+CMD ["node", "server.js"]

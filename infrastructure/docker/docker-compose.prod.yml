@@ -1,0 +1,70 @@
+# Sprint 9 — Production-shaped compose file. Distinct from
+# docker-compose.yml (Sprint 1, explicitly dev-only) — this uses the
+# Sprint 9 production Dockerfiles, no exposed DB/Redis ports to the
+# host, named volumes for persistence, and restart policies. Still not
+# a substitute for a real orchestrator (Kubernetes/ECS) at scale — see
+# DEPLOYMENT_ARCHITECTURE.md for when to graduate off this.
+version: "3.9"
+
+services:
+  backend:
+    build:
+      context: ../../backend
+      dockerfile: ../infrastructure/docker/Dockerfile.backend
+    restart: unless-stopped
+    env_file: ./.env.production
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - "4000:4000"
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:4000/v1/health/ready', r => process.exit(r.statusCode === 200 ? 0 : 1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  frontend:
+    build:
+      context: ../../frontend
+      dockerfile: ../infrastructure/docker/Dockerfile.frontend
+    restart: unless-stopped
+    env_file: ./.env.production
+    depends_on:
+      - backend
+    ports:
+      - "3000:3000"
+
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    env_file: ./.env.production
+    volumes:
+      - hmb_postgres_prod_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    # Sprint 9 — no host port mapping: only `backend` reaches Postgres,
+    # over the compose network. A real deployment (see
+    # DEPLOYMENT_ARCHITECTURE.md) would use a managed DB instead of
+    # this container at all.
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - hmb_redis_prod_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  hmb_postgres_prod_data:
+  hmb_redis_prod_data:
