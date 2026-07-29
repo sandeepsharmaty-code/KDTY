@@ -5,6 +5,7 @@ import {
   TypeOrmHealthIndicator,
 } from "@nestjs/terminus";
 import { ApiTags } from "@nestjs/swagger";
+import { Public } from "@/common/decorators/public.decorator";
 
 // Sprint 3.2 — Core Infrastructure / Sprint 3.6 — API Standards §16.16:
 // "Every service exposes a health-check hook." Liveness is a bare 200;
@@ -17,11 +18,13 @@ export class HealthController {
     private readonly db: TypeOrmHealthIndicator,
   ) {}
 
+  @Public()
   @Get("live")
   live() {
     return { status: "ok" };
   }
 
+  @Public()
   @Get("ready")
   @HealthCheck()
   ready() {
