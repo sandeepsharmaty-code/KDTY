@@ -15,16 +15,6 @@ export interface VerificationReport {
   allPassed: boolean;
 }
 
-// Sprint 7.4.9 — Seed Verification. Runs AFTER SeedEngineService.execute()
-// completes, as a separate read-only integrity pass over what actually
-// landed in the database — distinct from Sprint 7.4.6's per-entity
-// Content Validation (which checks a single entity's own fields before
-// insertion; this checks CROSS-entity referential integrity after the
-// fact, which by definition can only be checked once everything exists).
-// Uses raw queries against the DataSource directly (not injected domain
-// services) since these are cross-cutting structural checks spanning
-// many entity types at once — the kind of check that doesn't belong to
-// any single module's service.
 @Injectable()
 export class SeedVerificationService {
   constructor(@InjectDataSource() private readonly dataSource: DataSource) {}
@@ -46,44 +36,40 @@ export class SeedVerificationService {
   }
 
   private async checkCategoryHierarchyIntegrity(): Promise<VerificationCheck> {
-    // Sprint 7.4.9 — every non-root category must resolve to a real parent row.
     const orphans = await this.dataSource.query(
-      `SELECT c.id FROM category_closure cc JOIN category c ON c.id = cc."descendantId" WHERE cc.depth = 1 AND NOT EXISTS (SELECT 1 FROM category p WHERE p.id = cc."ancestorId")`,
-    ).catch(() => []); // Sprint 7.4.9 — closure-table column names are TypeORM-generated; this check degrades gracefully (see Known Issues) rather than crashing verification if the schema differs from assumed
+      `SELECT cc.id_ancestor FROM categories_closure cc WHERE NOT EXISTS (SELECT 1 FROM categories c WHERE c.id = cc.id_ancestor) OR NOT EXISTS (SELECT 1 FROM categories c WHERE c.id = cc.id_descendant)`,
+    ).catch(() => []);
     return { name: "Category hierarchy integrity", passed: orphans.length === 0, details: orphans.length === 0 ? "No orphaned subcategories found." : `${orphans.length} subcategor(y/ies) reference a missing parent.`, affectedCount: orphans.length };
   }
 
   private async checkProductCategoryLinks(): Promise<VerificationCheck> {
-    const orphans = await this.dataSource.query(`SELECT p.id FROM product p WHERE p."categoryId" IS NULL OR NOT EXISTS (SELECT 1 FROM category c WHERE c.id = p."categoryId")`);
+    const orphans = await this.dataSource.query(`SELECT p.id FROM products p WHERE p."categoryId" IS NULL OR NOT EXISTS (SELECT 1 FROM categories c WHERE c.id = p."categoryId")`);
     return { name: "Product-category relationships", passed: orphans.length === 0, details: orphans.length === 0 ? "Every product references a valid category." : `${orphans.length} product(s) have no valid category.`, affectedCount: orphans.length };
   }
 
   private async checkCollectionAssignments(): Promise<VerificationCheck> {
-    const empty = await this.dataSource.query(`SELECT col.id FROM collection col WHERE NOT EXISTS (SELECT 1 FROM collection_products_product cp WHERE cp."collectionId" = col.id)`);
+    const empty = await this.dataSource.query(`SELECT col.id FROM collections col WHERE NOT EXISTS (SELECT 1 FROM collection_products cp WHERE cp."collectionsId" = col.id)`);
     return { name: "Collection product assignments", passed: empty.length === 0, details: empty.length === 0 ? "Every collection has at least one product." : `${empty.length} collection(s) have zero assigned products.`, affectedCount: empty.length };
   }
 
   private async checkCustomerOrderLinks(): Promise<VerificationCheck> {
-    const orphans = await this.dataSource.query(`SELECT o.id FROM "order" o WHERE NOT EXISTS (SELECT 1 FROM customer c WHERE c.id = o."customerId")`);
+    const orphans = await this.dataSource.query(`SELECT o.id FROM orders o WHERE NOT EXISTS (SELECT 1 FROM customers c WHERE c.id = o."customerId")`);
     return { name: "Customer-order relationships", passed: orphans.length === 0, details: orphans.length === 0 ? "Every order references a valid customer." : `${orphans.length} order(s) reference a missing customer.`, affectedCount: orphans.length };
   }
 
   private async checkReviewProductLinks(): Promise<VerificationCheck> {
-    const orphans = await this.dataSource.query(`SELECT r.id FROM review r WHERE NOT EXISTS (SELECT 1 FROM product_variant v WHERE v.id = r."variantId")`);
+    const orphans = await this.dataSource.query(`SELECT r.id FROM reviews r WHERE NOT EXISTS (SELECT 1 FROM product_variants v WHERE v.id = r."variantId")`);
     return { name: "Review-product relationships", passed: orphans.length === 0, details: orphans.length === 0 ? "Every review references a valid product variant." : `${orphans.length} review(s) reference a missing variant.`, affectedCount: orphans.length };
   }
 
   private async checkBannerAssetReferences(): Promise<VerificationCheck> {
-    const banners = await this.dataSource.query(`SELECT "imageUrl" FROM banner`);
-    // Sprint 7.4.9 — "broken asset reference" here means the URL isn't
-    // one of the mock paths the seed itself created (see Known Issues —
-    // no real S3/StorageService listing exists to check against yet).
+    const banners = await this.dataSource.query(`SELECT "imageUrl" FROM banners`);
     const broken = banners.filter((b: { imageUrl: string }) => !b.imageUrl?.startsWith("/mock/"));
     return { name: "Banner asset references", passed: broken.length === 0, details: broken.length === 0 ? "All banner images reference recognized seed assets." : `${broken.length} banner(s) reference an unrecognized asset path.`, affectedCount: broken.length };
   }
 
   private async checkCmsInternalLinks(): Promise<VerificationCheck> {
-    const pages = await this.dataSource.query(`SELECT slug FROM static_page`);
+    const pages = await this.dataSource.query(`SELECT slug FROM static_pages`);
     const slugs = new Set(pages.map((p: { slug: string }) => p.slug));
     const expectedCrossLinks = ["privacy", "terms", "shipping-policy", "return-refund-policy"];
     const missing = expectedCrossLinks.filter((s) => !slugs.has(s));
@@ -96,7 +82,7 @@ export class SeedVerificationService {
   }
 
   private async checkSeoMetadataCompleteness(): Promise<VerificationCheck> {
-    const missing = await this.dataSource.query(`SELECT id FROM product WHERE "metaTitle" IS NULL OR "metaDescription" IS NULL`);
+    const missing = await this.dataSource.query(`SELECT id FROM products WHERE "metaTitle" IS NULL OR "metaDescription" IS NULL`);
     return { name: "Product SEO metadata completeness", passed: missing.length === 0, details: missing.length === 0 ? "Every product has meta title and description." : `${missing.length} product(s) are missing SEO metadata.`, affectedCount: missing.length };
   }
 }
