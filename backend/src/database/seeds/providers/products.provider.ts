@@ -80,6 +80,9 @@ export class ProductsSeedProvider implements SeedProvider {
         variants: seed.variants,
       });
 
+      // Sprint 11 -- activate seeded products so they are visible on the storefront
+      await this.products.activate(entity.id).catch(() => null);
+
       // Sprint 7.4.7 — "Avoid duplicate media references": mediaUrls are
       // set wholesale by upsertFullProduct (overwritten, not appended)
       // on every run, so a repeated seed execution never accumulates

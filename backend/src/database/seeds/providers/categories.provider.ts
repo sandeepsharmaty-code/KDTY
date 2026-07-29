@@ -43,7 +43,9 @@ export class CategoriesSeedProvider implements SeedProvider {
     parent: CategoryEntity | undefined,
     dryRun: boolean,
   ): Promise<{ outcome: SeedEntityOutcome; entity?: CategoryEntity }> {
+    const existing = await this.categories.getCategory(node.slug).catch(() => null);
     const report = await this.validation.validateCategoryContent({
+      categoryId: existing?.id,
       name: node.name,
       slug: node.slug,
       parentSlug: parent?.slug,
