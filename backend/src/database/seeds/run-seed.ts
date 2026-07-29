@@ -2,7 +2,7 @@ import "dotenv/config";
 import { NestFactory } from "@nestjs/core";
 import { getDataSourceToken } from "@nestjs/typeorm";
 import type { DataSource } from "typeorm";
-import { AppModule } from "@/app.module";
+import { SeedRootModule } from "./seed-root.module";
 import { SeedProvidersModule } from "./providers/seed-providers.module";
 import { SeedEngineService } from "./engine/seed-engine.service";
 import { SeedVerificationService } from "./engine/seed-verification.service";
@@ -38,7 +38,7 @@ async function run() {
   const dryRun = process.argv.includes("--dry-run");
   console.log(`Bootstrapping application context (dry-run: ${dryRun})...`);
 
-  const app = await NestFactory.createApplicationContext(AppModule, { logger: ["error", "warn"] });
+  const app = await NestFactory.createApplicationContext(SeedRootModule, { logger: ["error", "warn"] });
   const dataSource = app.get<DataSource>(getDataSourceToken());
 
   // Sprint 7.4 — the first Super Admin account remains a direct
