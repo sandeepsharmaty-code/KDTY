@@ -8,7 +8,7 @@ import { DataSource } from "typeorm";
 export const AppDataSource = new DataSource({
   type: "postgres",
   url: process.env.DATABASE_URL,
-  entities: ["src/modules/**/entities/*.entity.ts"],
+  entities: ["src/**/entities/*.entity.ts"],
   migrations: ["src/database/migrations/*.ts"],
   synchronize: false, // Sprint 3.4 — schema changes go through migrations only, never auto-sync
   logging: process.env.NODE_ENV === "development",
