@@ -5,7 +5,7 @@
   "scripts": {
     "build": "nest build",
     "dev": "nest start --watch",
-    "start": "npm run migration:generate -- src/database/migrations/InitialSchema || true; npm run migration:run || true; node dist/main",
+    "start": "npm run migration:generate -- src/database/migrations/InitialSchema || true; npm run migration:run || true; npm run seed || true; node dist/main",
     "lint": "eslint . --config ../config/eslint/.eslintrc.base.json",
     "test": "jest",
     "test:watch": "jest --watch",
