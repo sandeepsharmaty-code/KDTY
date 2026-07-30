@@ -1,16 +1,17 @@
 import type { Metadata } from "next";
 import { ProductListingGrid } from "@/components/sections/ProductListingGrid";
-import { MOCK_PRODUCTS } from "@/services/mock/products";
+import { getAllProducts } from "@/services/api/products";
 
 export const metadata: Metadata = {
   title: "Search Results",
-  robots: { index: false }, // search result pages excluded per Phase 7 AI/SEO readiness norms
+  robots: { index: false },
 };
 
-export default function SearchPage({ searchParams }: { searchParams: { q?: string } }) {
+export default async function SearchPage({ searchParams }: { searchParams: { q?: string } }) {
   const query = searchParams.q ?? "";
+  const allProducts = query ? await getAllProducts() : [];
   const results = query
-    ? MOCK_PRODUCTS.filter((p) => p.name.toLowerCase().includes(query.toLowerCase()))
+    ? allProducts.filter((p) => p.name.toLowerCase().includes(query.toLowerCase()))
     : [];
 
   return (
