@@ -5,15 +5,13 @@ import { Icon } from "@/components/basic/Icon";
 import { SearchBar } from "@/components/composite/SearchBar";
 import { MegaMenu } from "@/components/sections/MegaMenu";
 import { MobileMenu } from "@/components/sections/MobileMenu";
-import { MAIN_CATEGORIES } from "@/constants/navigation";
 import { ROUTES } from "@/constants/routes";
+import type { Category } from "@/types/product";
 
-// Header — Phase 4 §9. Fixed height, White background, Fog bottom border.
-// (Scroll-compression behavior from Phase 3 §3 is a motion/interaction
-// refinement layered on top of this static structure in a later pass.)
-export function Header() {
+export function Header({ categories }: { categories: Category[] }) {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [megaMenuCategory, setMegaMenuCategory] = useState<string | null>(null);
+  const [megaMenuCategoryId, setMegaMenuCategoryId] = useState<string | null>(null);
+  const megaMenuCategory = categories.find((c) => c.id === megaMenuCategoryId) ?? null;
 
   return (
     <>
@@ -34,13 +32,13 @@ export function Header() {
             Hue Muse Beauty
           </Link>
 
-          <nav aria-label="Main" className="hidden gap-6 sm:flex" onMouseLeave={() => setMegaMenuCategory(null)}>
-            {MAIN_CATEGORIES.map((cat) => (
-              <div key={cat.id} onMouseEnter={() => setMegaMenuCategory(cat.id)}>
+          <nav aria-label="Main" className="hidden gap-6 sm:flex" onMouseLeave={() => setMegaMenuCategoryId(null)}>
+            {categories.map((cat) => (
+              <div key={cat.id} onMouseEnter={() => setMegaMenuCategoryId(cat.id)}>
                 <Link
                   href={ROUTES.category(cat.slug)}
                   className="text-[15px] font-semibold text-ink hover:text-primary-rose"
-                  aria-expanded={megaMenuCategory === cat.id}
+                  aria-expanded={megaMenuCategoryId === cat.id}
                 >
                   {cat.name}
                 </Link>
@@ -73,13 +71,13 @@ export function Header() {
         </div>
 
         {megaMenuCategory && (
-          <div onMouseEnter={() => setMegaMenuCategory(megaMenuCategory)} onMouseLeave={() => setMegaMenuCategory(null)}>
-            <MegaMenu categoryId={megaMenuCategory} />
+          <div onMouseEnter={() => setMegaMenuCategoryId(megaMenuCategory.id)} onMouseLeave={() => setMegaMenuCategoryId(null)}>
+            <MegaMenu category={megaMenuCategory} />
           </div>
         )}
       </header>
 
-      <MobileMenu isOpen={mobileOpen} onClose={() => setMobileOpen(false)} />
+      <MobileMenu isOpen={mobileOpen} onClose={() => setMobileOpen(false)} categories={categories} />
     </>
   );
 }
