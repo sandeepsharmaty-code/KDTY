@@ -90,7 +90,6 @@ async function run() {
   }
 
   const summary = await engine.execute(dryRun);
-  console.log(JSON.stringify(summary, null, 2));
 
   if (summary.fatalError) {
     console.error(`Seed run failed: ${summary.fatalError}`);
@@ -113,8 +112,7 @@ async function run() {
   if (!dryRun) {
     const verification = providersModuleRef.get(SeedVerificationService, { strict: false });
     const verificationReport = await verification.verify();
-    console.log("=== Verification Report ===");
-    console.log(JSON.stringify(verificationReport, null, 2));
+    console.log(`Verification: ${verificationReport.allPassed ? "all checks passed" : "one or more checks FAILED"} (${verificationReport.checks.length} checks run).`);
     if (!verificationReport.allPassed) {
       console.warn("One or more verification checks failed — review the report above.");
     }
