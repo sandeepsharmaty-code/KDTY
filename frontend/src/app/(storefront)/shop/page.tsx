@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Breadcrumb } from "@/components/patterns/Breadcrumb";
 import { FilterPanel } from "@/components/patterns/FilterPanel";
 import { ProductListingGrid } from "@/components/sections/ProductListingGrid";
-import { MOCK_PRODUCTS } from "@/services/mock/products";
+import { getAllProducts } from "@/services/api/products";
 
 export const metadata: Metadata = {
   title: "Shop All",
@@ -15,7 +15,8 @@ const FILTER_GROUPS = [
   { id: "finish", label: "Finish", options: [{ id: "matte", label: "Matte" }, { id: "glossy", label: "Glossy" }] },
 ];
 
-export default function ShopPage() {
+export default async function ShopPage() {
+  const products = await getAllProducts();
   return (
     <div className="py-6">
       <Breadcrumb items={[{ label: "Home", href: "/" }, { label: "Shop" }]} />
@@ -23,7 +24,7 @@ export default function ShopPage() {
       <div className="mt-6 flex flex-col gap-8 sm:flex-row">
         <FilterPanel groups={FILTER_GROUPS} />
         <div className="flex-1">
-          <ProductListingGrid products={MOCK_PRODUCTS} />
+          <ProductListingGrid products={products} />
         </div>
       </div>
     </div>
