@@ -41,6 +41,7 @@ interface ApiCategory {
   name: string;
   visible: boolean;
   displayOrder: number;
+  children?: ApiCategory[];
 }
 
 interface ApiCollection {
@@ -104,6 +105,7 @@ function mapCategory(c: ApiCategory, itemCount = 0): Category {
     imageUrl: "/mock/category-placeholder.jpg",
     imageAlt: c.name,
     itemCount,
+    subcategories: c.children?.map((child) => ({ id: child.id, slug: child.slug, name: child.name })),
   };
 }
 
@@ -128,9 +130,10 @@ export async function getProductBySlug(slug: string): Promise<Product | undefine
   return p ? mapProduct(p) : undefined;
 }
 
-export async function getProductsByCategory(categoryId: string): Promise<Product[]> {
+export async function getProductsByCategory(category: Category): Promise<Product[]> {
   const all = await getAllProducts();
-  return all.filter((p) => p.categoryId === categoryId);
+  const ids = new Set<string>([category.id, ...(category.subcategories ?? []).map((s) => s.id)]);
+  return all.filter((p) => ids.has(p.categoryId));
 }
 
 export async function getAllCategories(): Promise<Category[]> {
