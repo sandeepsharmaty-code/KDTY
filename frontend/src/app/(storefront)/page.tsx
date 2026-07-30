@@ -4,7 +4,7 @@ import { CategoryDiscoveryGrid } from "@/components/sections/CategoryDiscoveryGr
 import { RelatedCarousel } from "@/components/patterns/RelatedCarousel";
 import { CollectionCard } from "@/components/composite/CollectionCard";
 import { TrustSignalStrip } from "@/components/patterns/TrustSignalStrip";
-import { MOCK_CATEGORIES, MOCK_COLLECTIONS, MOCK_PRODUCTS } from "@/services/mock/products";
+import { getAllCategories, getAllCollections, getAllProducts } from "@/services/api/products";
 
 export const metadata: Metadata = {
   title: "Premium Nail Polish & Color Cosmetics",
@@ -13,13 +13,15 @@ export const metadata: Metadata = {
   alternates: { canonical: "/" },
 };
 
-export default function HomePage() {
+export default async function HomePage() {
+  const [categories, collections, products] = await Promise.all([
+    getAllCategories(),
+    getAllCollections(),
+    getAllProducts(),
+  ]);
+
   return (
     <>
-      {/* Sprint 2.9 — structured data placeholder (Organization). Real
-          values (logo URL, social profiles) are finalized when brand
-          assets land; the shape is wired now so no later page rewrite
-          is needed. */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -39,16 +41,16 @@ export default function HomePage() {
         imageUrl="/mock/hero-home.jpg"
         imageAlt="Hue Muse Beauty product lineup on a marble surface"
       />
-      <CategoryDiscoveryGrid categories={MOCK_CATEGORIES} />
+      <CategoryDiscoveryGrid categories={categories} />
       <section aria-label="Collections" className="py-8">
         <h2 className="mb-6 font-display text-[32px] leading-10 font-semibold text-ink">Featured Collections</h2>
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-          {MOCK_COLLECTIONS.map((c) => (
+          {collections.map((c) => (
             <CollectionCard key={c.id} collection={c} />
           ))}
         </div>
       </section>
-      <RelatedCarousel title="Best Sellers" products={MOCK_PRODUCTS} />
+      <RelatedCarousel title="Best Sellers" products={products} />
       <TrustSignalStrip />
     </>
   );
