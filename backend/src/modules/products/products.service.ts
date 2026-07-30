@@ -199,6 +199,7 @@ export class ProductsService {
     entity.name = data.name;
     entity.category = data.category;
     entity.price = String(data.price);
+    entity.currency = "INR";
     entity.salePrice = data.salePrice !== undefined ? String(data.salePrice) : undefined;
     entity.description = data.description;
     entity.content = data.content;
