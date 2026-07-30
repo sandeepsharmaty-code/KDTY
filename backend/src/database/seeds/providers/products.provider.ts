@@ -26,7 +26,7 @@ export class ProductsSeedProvider implements SeedProvider {
     const outcomes: SeedEntityOutcome[] = [];
 
     for (const seed of PRODUCT_SEEDS) {
-      const existing = await this.products.getProduct(seed.slug).catch(() => null);
+      const existing = await this.products.findBySlugAnyState(seed.slug);
 
       const report = await this.validation.validateProductContent({
         productId: existing?.id,

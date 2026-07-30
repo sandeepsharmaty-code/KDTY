@@ -34,6 +34,10 @@ export class ProductsService {
     return product;
   }
 
+  async findBySlugAnyState(slug: string): Promise<ProductEntity | null> {
+    return this.products.findOne({ where: { slug }, relations: ["category", "variants"] });
+  }
+
   // listProducts(categoryId, filters, sort, page) -> ProductList
   async listProducts(query: ListProductsQueryDto): Promise<PaginatedResponse<ProductEntity>> {
     const qb = this.products
