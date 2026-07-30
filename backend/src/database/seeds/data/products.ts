@@ -30,7 +30,7 @@ export const PRODUCT_SEEDS: ProductSeed[] = [
   {
     slug: "muse-rose-nail-lacquer",
     name: "Muse Rose Nail Lacquer",
-    categorySlug: "nail-polish",
+    categorySlug: "regular-nail-polish",
     collectionSlugs: ["best-sellers", "luxe-essentials"],
     price: 499,
     description:
@@ -60,7 +60,7 @@ export const PRODUCT_SEEDS: ProductSeed[] = [
   {
     slug: "everlast-gel-polish-scarlet",
     name: "Everlast Gel Polish — Scarlet",
-    categorySlug: "gel-polish",
+    categorySlug: "gel-nail-polish",
     collectionSlugs: ["best-sellers"],
     price: 649,
     description:
@@ -135,7 +135,7 @@ export const PRODUCT_SEEDS: ProductSeed[] = [
   {
     slug: "revive-cuticle-treatment-oil",
     name: "Revive Cuticle Treatment Oil",
-    categorySlug: "nail-treatments",
+    categorySlug: "nail-treatment",
     collectionSlugs: ["new-arrivals"],
     price: 399,
     description:
