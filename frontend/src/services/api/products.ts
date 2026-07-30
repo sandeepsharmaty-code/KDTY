@@ -55,7 +55,7 @@ interface ApiCollection {
 
 async function apiFetch<T>(path: string): Promise<T | null> {
   try {
-    const res = await fetch(`${API_BASE}${path}`, { next: { revalidate: 60 } });
+    const res = await fetch(`${API_BASE}${path}`, { cache: "no-store" });
     if (!res.ok) return null;
     const body = (await res.json()) as ApiEnvelope<T>;
     return body.data;
