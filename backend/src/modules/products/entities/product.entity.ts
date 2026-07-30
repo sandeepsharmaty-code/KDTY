@@ -79,7 +79,7 @@ export class ProductEntity {
   @Column({ type: "decimal", precision: 10, scale: 2, nullable: true })
   salePrice?: string;
 
-  @Column({ default: "USD" })
+  @Column({ default: "INR" })
   currency!: string;
 
   // Structured, filterable attributes per Phase 2 §2 / Phase 7 §1 —
