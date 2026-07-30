@@ -183,7 +183,12 @@ export class OrdersService {
         manager.create(OrderStatusHistoryEntity, { order: savedOrder, status: "pending_payment" }),
       );
 
-      return this.getOrder(savedOrder.id);
+      const savedWithRelations = await manager.findOne(OrderEntity, {
+        where: { id: savedOrder.id },
+        relations: ["lineItems", "statusHistory"],
+      });
+      if (!savedWithRelations) throw new NotFoundException("Order not found.");
+      return savedWithRelations;
     });
   }
 
