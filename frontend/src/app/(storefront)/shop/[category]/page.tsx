@@ -3,14 +3,14 @@ import { notFound } from "next/navigation";
 import { Breadcrumb } from "@/components/patterns/Breadcrumb";
 import { FilterPanel } from "@/components/patterns/FilterPanel";
 import { ProductListingGrid } from "@/components/sections/ProductListingGrid";
-import { getCategoryBySlug, getProductsByCategory } from "@/services/mock/products";
+import { getCategoryBySlug, getProductsByCategory } from "@/services/api/products";
 
 interface Props {
   params: { category: string };
 }
 
-export function generateMetadata({ params }: Props): Metadata {
-  const category = getCategoryBySlug(params.category);
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const category = await getCategoryBySlug(params.category);
   if (!category) return {};
   return {
     title: category.name,
@@ -23,11 +23,11 @@ const FILTER_GROUPS = [
   { id: "finish", label: "Finish", options: [{ id: "matte", label: "Matte" }, { id: "glossy", label: "Glossy" }] },
 ];
 
-export default function CategoryPage({ params }: Props) {
-  const category = getCategoryBySlug(params.category);
+export default async function CategoryPage({ params }: Props) {
+  const category = await getCategoryBySlug(params.category);
   if (!category) notFound();
 
-  const products = getProductsByCategory(category.id);
+  const products = await getProductsByCategory(category.id);
 
   return (
     <div className="py-6">
