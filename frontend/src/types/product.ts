@@ -36,6 +36,7 @@ export interface Product {
   rating: number;
   reviewCount: number;
   description?: string;
+  finish?: string;
 }
 
 export interface Category {
