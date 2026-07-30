@@ -4,7 +4,7 @@ import { Icon } from "@/components/basic/Icon";
 // Card. Trust/guarantee messaging (free shipping, returns, secure
 // checkout) used across PDP and cart.
 const SIGNALS = [
-  { label: "Free shipping over $50" },
+  { label: "Free shipping over Rs 500" },
   { label: "30-day returns" },
   { label: "Secure checkout" },
   { label: "Cruelty-free formulas" },
