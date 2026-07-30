@@ -28,6 +28,7 @@ interface ApiProduct {
   status: string;
   visibility: string;
   variants: ApiProductVariant[];
+  content?: { specifications?: Record<string, string> };
 }
 
 interface ApiProductList {
@@ -93,6 +94,7 @@ function mapProduct(p: ApiProduct): Product {
     })),
     rating: 0,
     reviewCount: 0,
+    finish: p.content?.specifications?.finish,
     description: p.description,
   };
 }
