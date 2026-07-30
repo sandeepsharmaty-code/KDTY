@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 };
 
 const FILTER_GROUPS = [
-  { id: "price", label: "Price", options: [{ id: "under-20", label: "Under $20" }, { id: "20-40", label: "$20–$40" }] },
+  { id: "price", label: "Price", options: [{ id: "under-500", label: "Under Rs 500" }, { id: "500-800", label: "Rs 500 to Rs 800" }, { id: "over-800", label: "Over Rs 800" }] },
   { id: "finish", label: "Finish", options: [{ id: "matte", label: "Matte" }, { id: "glossy", label: "Glossy" }] },
 ];
 
