@@ -81,7 +81,9 @@ export class ProductsSeedProvider implements SeedProvider {
       });
 
       // Sprint 11 -- activate seeded products so they are visible on the storefront
-      await this.products.activate(entity.id).catch(() => null);
+      await this.products.activate(entity.id).catch((err) => {
+        console.error(`[products-seed] activation failed for "${seed.slug}": ${err instanceof Error ? err.message : String(err)}`);
+      });
 
       // Sprint 7.4.7 — "Avoid duplicate media references": mediaUrls are
       // set wholesale by upsertFullProduct (overwritten, not appended)
