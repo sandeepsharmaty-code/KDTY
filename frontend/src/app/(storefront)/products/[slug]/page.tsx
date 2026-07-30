@@ -6,14 +6,14 @@ import { ReviewCard } from "@/components/composite/ReviewCard";
 import { Tabs } from "@/components/composite/Tabs";
 import { RelatedCarousel } from "@/components/patterns/RelatedCarousel";
 import { TrustSignalStrip } from "@/components/patterns/TrustSignalStrip";
-import { getProductBySlug, MOCK_PRODUCTS, MOCK_REVIEWS } from "@/services/mock/products";
+import { getAllProducts, getProductBySlug, getReviewsForProduct } from "@/services/api/products";
 
 interface Props {
   params: { slug: string };
 }
 
-export function generateMetadata({ params }: Props): Metadata {
-  const product = getProductBySlug(params.slug);
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const product = await getProductBySlug(params.slug);
   if (!product) return {};
   return {
     title: product.name,
@@ -23,17 +23,15 @@ export function generateMetadata({ params }: Props): Metadata {
   };
 }
 
-export default function ProductPage({ params }: Props) {
-  const product = getProductBySlug(params.slug);
+export default async function ProductPage({ params }: Props) {
+  const product = await getProductBySlug(params.slug);
   if (!product) notFound();
 
-  const related = MOCK_PRODUCTS.filter((p) => p.id !== product.id);
+  const [allProducts, reviews] = await Promise.all([getAllProducts(), getReviewsForProduct(product.id)]);
+  const related = allProducts.filter((p) => p.id !== product.id);
 
   return (
     <div className="py-6">
-      {/* Sprint 2.9 — structured data placeholder (Product). Values map
-          1:1 from the mock Product type today; will map from the real
-          API response in the sprint that adds backend integration. */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -81,10 +79,10 @@ export default function ProductPage({ params }: Props) {
             },
             {
               id: "reviews",
-              label: `Reviews (${MOCK_REVIEWS.length})`,
+              label: `Reviews (${reviews.length})`,
               content: (
                 <div>
-                  {MOCK_REVIEWS.map((r) => (
+                  {reviews.map((r) => (
                     <ReviewCard key={r.id} review={r} />
                   ))}
                 </div>
