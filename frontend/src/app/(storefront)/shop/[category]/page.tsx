@@ -8,6 +8,7 @@ import { getCategoryBySlug, getProductsByCategory } from "@/services/api/product
 
 interface Props {
   params: { category: string };
+  searchParams: { finish?: string | string[] };
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -20,15 +21,37 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-const FILTER_GROUPS = [
-  { id: "finish", label: "Finish", options: [{ id: "matte", label: "Matte" }, { id: "glossy", label: "Glossy" }] },
-];
+function toArray(value: string | string[] | undefined): string[] {
+  if (!value) return [];
+  return Array.isArray(value) ? value : [value];
+}
 
-export default async function CategoryPage({ params }: Props) {
+function slugify(value: string): string {
+  return value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+}
+
+export default async function CategoryPage({ params, searchParams }: Props) {
   const category = await getCategoryBySlug(params.category);
   if (!category) notFound();
 
-  const products = await getProductsByCategory(category);
+  const allProducts = await getProductsByCategory(category);
+
+  const finishValues = Array.from(
+    new Set(allProducts.map((p) => p.finish).filter((f): f is string => Boolean(f) && f !== "N/A")),
+  ).sort();
+  const filterGroups = [
+    {
+      id: "finish",
+      label: "Finish",
+      options: finishValues.map((f) => ({ id: slugify(f), label: f })),
+    },
+  ];
+
+  const selectedFinish = toArray(searchParams.finish);
+  const products =
+    selectedFinish.length > 0
+      ? allProducts.filter((p) => p.finish && selectedFinish.includes(slugify(p.finish)))
+      : allProducts;
 
   return (
     <div className="py-6">
@@ -50,7 +73,7 @@ export default async function CategoryPage({ params }: Props) {
       )}
 
       <div className="mt-6 flex flex-col gap-8 sm:flex-row">
-        <FilterPanel groups={FILTER_GROUPS} />
+        <FilterPanel groups={filterGroups} />
         <div className="flex-1">
           <ProductListingGrid products={products} />
         </div>
