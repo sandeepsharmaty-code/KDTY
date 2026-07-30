@@ -1,15 +1,16 @@
 import type { Metadata } from "next";
 import { Breadcrumb } from "@/components/patterns/Breadcrumb";
 import { ProductListingGrid } from "@/components/sections/ProductListingGrid";
-import { MOCK_PRODUCTS } from "@/services/mock/products";
+import { getAllProducts } from "@/services/api/products";
 
 export const metadata: Metadata = {
   title: "Wishlist",
   robots: { index: false },
 };
 
-export default function WishlistPage() {
-  const wishlisted = MOCK_PRODUCTS.slice(0, 2);
+export default async function WishlistPage() {
+  const allProducts = await getAllProducts();
+  const wishlisted = allProducts.slice(0, 2);
   return (
     <div className="py-6">
       <Breadcrumb items={[{ label: "Home", href: "/" }, { label: "Account", href: "/account" }, { label: "Wishlist" }]} />
