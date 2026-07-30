@@ -1,12 +1,11 @@
-import Image from "next/image";
 import Link from "next/link";
 import { Badge } from "@/components/basic/Badge";
 import { Icon } from "@/components/basic/Icon";
 import type { Product } from "@/types/product";
 import { ROUTES } from "@/constants/routes";
+import { formatCurrency } from "@/utils/formatCurrency";
+import { ProductSwatchImage } from "@/components/composite/ProductSwatchImage";
 
-// Product Card — Phase 4 §8. Image, badge, name, shade count, price,
-// quick-add icon. Consistent aspect ratio across all listing grids.
 export function ProductCard({ product }: { product: Product }) {
   const isOutOfStock = product.availability === "out-of-stock";
 
@@ -14,13 +13,7 @@ export function ProductCard({ product }: { product: Product }) {
     <article className="group relative flex flex-col rounded-md bg-white shadow-rest transition-shadow duration-base hover:shadow-hover">
       <Link href={ROUTES.product(product.slug)} className="block">
         <div className="relative aspect-square overflow-hidden rounded-t-md bg-paper">
-          <Image
-            src={product.imageUrl}
-            alt={product.imageAlt}
-            fill
-            sizes="(max-width: 600px) 50vw, (max-width: 1024px) 33vw, 25vw"
-            className="object-cover"
-          />
+          <ProductSwatchImage product={product} className="absolute inset-0" />
           {product.badges.length > 0 && (
             <div className="absolute left-2 top-2 flex flex-col gap-1">
               {product.badges.map((b) => (
@@ -58,15 +51,15 @@ export function ProductCard({ product }: { product: Product }) {
           {product.salePrice ? (
             <>
               <span className="text-[20px] leading-6 font-semibold text-primary-rose">
-                ${product.salePrice.toFixed(2)}
+                {formatCurrency(product.salePrice, product.currency)}
               </span>
               <span className="text-[13px] leading-[18px] text-stone line-through">
-                ${product.price.toFixed(2)}
+                {formatCurrency(product.price, product.currency)}
               </span>
             </>
           ) : (
             <span className="text-[20px] leading-6 font-semibold text-ink">
-              ${product.price.toFixed(2)}
+              {formatCurrency(product.price, product.currency)}
             </span>
           )}
         </div>
