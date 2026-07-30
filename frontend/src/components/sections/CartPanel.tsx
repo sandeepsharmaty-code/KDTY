@@ -4,9 +4,8 @@ import { QuantitySelector } from "@/components/composite/QuantitySelector";
 import { EmptyState } from "@/components/patterns/EmptyState";
 import { Button } from "@/components/basic/Button";
 import type { CartLine } from "@/types/product";
+import { formatCurrency } from "@/utils/formatCurrency";
 
-// Cart Panel — Phase 4 §17 Page Section. Used both as the full Cart page
-// content and (in a later sprint) a slide-out mini-cart via Drawer.
 export function CartPanel({
   lines,
   onQuantityChange,
@@ -46,7 +45,7 @@ export function CartPanel({
               </div>
               <div className="flex items-center justify-between">
                 <QuantitySelector value={line.quantity} onChange={(n) => onQuantityChange(line.productId, n)} />
-                <span className="font-semibold text-ink">${(line.unitPrice * line.quantity).toFixed(2)}</span>
+                <span className="font-semibold text-ink">{formatCurrency(line.unitPrice * line.quantity)}</span>
               </div>
             </div>
             <button
@@ -63,7 +62,7 @@ export function CartPanel({
       <div className="h-fit rounded-md bg-white p-6 shadow-rest">
         <div className="flex justify-between text-base text-ink">
           <span>Subtotal</span>
-          <span className="font-semibold">${subtotal.toFixed(2)}</span>
+          <span className="font-semibold">{formatCurrency(subtotal)}</span>
         </div>
         <p className="mt-1 text-[13px] leading-[18px] text-stone">Shipping and taxes calculated at checkout.</p>
         <Button variant="primary" fullWidth className="mt-4">
