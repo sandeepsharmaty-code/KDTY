@@ -3,18 +3,16 @@ import Link from "next/link";
 import { useState } from "react";
 import { Drawer } from "@/components/composite/Drawer";
 import { Icon } from "@/components/basic/Icon";
-import { MAIN_CATEGORIES } from "@/constants/navigation";
 import { ROUTES } from "@/constants/routes";
+import type { Category } from "@/types/product";
 
-// Mobile Menu — Phase 4 §9. Full-screen Paper overlay, accordion
-// sections with Charcoal chevron icons.
-export function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+export function MobileMenu({ isOpen, onClose, categories }: { isOpen: boolean; onClose: () => void; categories: Category[] }) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   return (
     <Drawer isOpen={isOpen} onClose={onClose} title="Menu" side="left">
       <ul className="flex flex-col divide-y divide-fog">
-        {MAIN_CATEGORIES.map((cat) => {
+        {categories.map((cat) => {
           const isExpanded = expandedId === cat.id;
           return (
             <li key={cat.id}>
@@ -30,10 +28,15 @@ export function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () =
                 </Icon>
               </button>
               {isExpanded && (
-                <div className="pb-4 pl-4">
-                  <Link href={ROUTES.category(cat.slug)} onClick={onClose} className="block py-2 text-charcoal">
+                <div className="flex flex-col gap-2 pb-4 pl-4">
+                  <Link href={ROUTES.category(cat.slug)} onClick={onClose} className="py-1 font-semibold text-charcoal">
                     Shop All {cat.name}
                   </Link>
+                  {(cat.subcategories ?? []).map((sub) => (
+                    <Link key={sub.id} href={ROUTES.category(sub.slug)} onClick={onClose} className="py-1 text-stone">
+                      {sub.name}
+                    </Link>
+                  ))}
                 </div>
               )}
             </li>
