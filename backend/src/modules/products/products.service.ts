@@ -208,9 +208,16 @@ export class ProductsService {
     entity.mediaUrls = data.mediaUrls;
     const saved = await this.products.save(entity);
 
-    const existingSkus = new Set((existing?.variants ?? []).map((v) => v.sku));
+    const existingVariantsBySku = new Map((existing?.variants ?? []).map((v) => [v.sku, v]));
     for (const variantSeed of data.variants) {
-      if (!existingSkus.has(variantSeed.sku)) {
+      const existingVariant = existingVariantsBySku.get(variantSeed.sku);
+      if (existingVariant) {
+        existingVariant.name = variantSeed.name;
+        existingVariant.hexColor = variantSeed.hexColor;
+        existingVariant.stockQuantity = variantSeed.stockQuantity;
+        existingVariant.stockState = this.computeStockState(variantSeed.stockQuantity);
+        await this.variants.save(existingVariant);
+      } else {
         await this.addVariant(saved.id, variantSeed);
       }
     }
