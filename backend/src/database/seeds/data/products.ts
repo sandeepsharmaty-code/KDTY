@@ -32,7 +32,7 @@ export const PRODUCT_SEEDS: ProductSeed[] = [
     name: "Muse Rose Nail Lacquer",
     categorySlug: "nail-polish",
     collectionSlugs: ["best-sellers", "luxe-essentials"],
-    price: 18,
+    price: 499,
     description:
       "A long-wear, high-shine lacquer in our signature rose. The chip-resistant formula delivers one-coat coverage for a salon finish that lasts, ideal for everyday wear or a special occasion.",
     content: {
@@ -62,7 +62,7 @@ export const PRODUCT_SEEDS: ProductSeed[] = [
     name: "Everlast Gel Polish — Scarlet",
     categorySlug: "gel-polish",
     collectionSlugs: ["best-sellers"],
-    price: 22,
+    price: 649,
     description:
       "A soak-off gel polish delivering up to 21 days of wear with zero chipping. Cures under LED light for a mirror-glass finish that resists dulling.",
     content: {
@@ -89,7 +89,7 @@ export const PRODUCT_SEEDS: ProductSeed[] = [
     name: "Fortify Ridge-Filling Base Coat",
     categorySlug: "base-coat",
     collectionSlugs: [],
-    price: 16,
+    price: 449,
     description:
       "A strengthening base coat that fills ridges and creates a smooth canvas for polish, while protecting nails from staining and improving polish adhesion.",
     content: {
@@ -113,7 +113,7 @@ export const PRODUCT_SEEDS: ProductSeed[] = [
     name: "Gold Shimmer Top Coat",
     categorySlug: "top-coat",
     collectionSlugs: ["seasonal-holiday-shine", "limited-edition"],
-    price: 16,
+    price: 449,
     description:
       "A fast-drying, glass-clear top coat infused with fine gold shimmer for extended wear and a subtle luminous finish over any polish color.",
     content: {
@@ -137,7 +137,7 @@ export const PRODUCT_SEEDS: ProductSeed[] = [
     name: "Revive Cuticle Treatment Oil",
     categorySlug: "nail-treatments",
     collectionSlugs: ["new-arrivals"],
-    price: 14,
+    price: 399,
     description:
       "A fast-absorbing cuticle oil blending jojoba and vitamin E to soften and nourish dry cuticles, promoting healthier-looking nails with daily use.",
     content: {
@@ -164,8 +164,8 @@ export const PRODUCT_SEEDS: ProductSeed[] = [
     name: "Plum Velvet Lipstick",
     categorySlug: "lipstick",
     collectionSlugs: ["best-sellers", "luxe-essentials"],
-    price: 24,
-    salePrice: 19,
+    price: 699,
+    salePrice: 549,
     description:
       "A velvet-matte lipstick in deep plum, formulated with a comfort-wear base for all-day color that never feels drying, in a richly pigmented single swipe.",
     content: {
@@ -195,7 +195,7 @@ export const PRODUCT_SEEDS: ProductSeed[] = [
     name: "Glass Shine Lip Gloss",
     categorySlug: "lip-gloss",
     collectionSlugs: ["new-arrivals", "trending"],
-    price: 16,
+    price: 449,
     description:
       "A high-shine, non-sticky lip gloss delivering a glass-like finish with a hint of sheer color, formulated with hyaluronic acid for a plumping effect.",
     content: {
@@ -219,7 +219,7 @@ export const PRODUCT_SEEDS: ProductSeed[] = [
     name: "Midnight Kajal Pencil",
     categorySlug: "kajal",
     collectionSlugs: ["best-sellers"],
-    price: 14,
+    price: 399,
     description:
       "An intensely pigmented kajal pencil in true black, gliding on smoothly for smudge-resistant definition that lasts through a full day of wear.",
     content: {
@@ -243,7 +243,7 @@ export const PRODUCT_SEEDS: ProductSeed[] = [
     name: "Precision Liquid Eyeliner",
     categorySlug: "eyeliner",
     collectionSlugs: ["trending"],
-    price: 18,
+    price: 499,
     description:
       "A fine-tip liquid eyeliner for precise, controlled lines from a subtle everyday wing to a bold statement look, with a fast-drying, budge-proof formula.",
     content: {
@@ -267,7 +267,7 @@ export const PRODUCT_SEEDS: ProductSeed[] = [
     name: "Volume Lash Mascara",
     categorySlug: "mascara",
     collectionSlugs: ["best-sellers", "trending"],
-    price: 20,
+    price: 599,
     description:
       "A volumizing mascara with a fiber-infused formula that builds dramatic length and fullness without clumping, for lashes that look salon-lifted.",
     content: {
@@ -294,7 +294,7 @@ export const PRODUCT_SEEDS: ProductSeed[] = [
     name: "Second Skin Foundation",
     categorySlug: "foundation",
     collectionSlugs: ["luxe-essentials"],
-    price: 32,
+    price: 899,
     description:
       "A lightweight, buildable foundation that blurs imperfections while letting natural skin texture show through, for a soft-focus, second-skin finish.",
     content: {
@@ -324,7 +324,7 @@ export const PRODUCT_SEEDS: ProductSeed[] = [
     name: "Brighten-Up Concealer",
     categorySlug: "concealer",
     collectionSlugs: [],
-    price: 22,
+    price: 649,
     description:
       "A creamy, crease-resistant concealer that brightens and covers with a natural finish, formulated to hold up through a full day without settling into fine lines.",
     content: {
@@ -348,7 +348,7 @@ export const PRODUCT_SEEDS: ProductSeed[] = [
     name: "Silk Finish Compact Powder",
     categorySlug: "compact-powder",
     collectionSlugs: ["luxe-essentials"],
-    price: 26,
+    price: 749,
     description:
       "A finely milled pressed powder that sets makeup with a soft, blurred finish, controlling shine without looking flat or powdery.",
     content: {
@@ -372,7 +372,7 @@ export const PRODUCT_SEEDS: ProductSeed[] = [
     name: "Flush of Rose Blush",
     categorySlug: "blush",
     collectionSlugs: ["seasonal-holiday-shine"],
-    price: 20,
+    price: 599,
     description:
       "A silky pressed blush that blends effortlessly for a natural flush, buildable from a soft wash of color to a more defined pop on the cheeks.",
     content: {
@@ -396,7 +396,7 @@ export const PRODUCT_SEEDS: ProductSeed[] = [
     name: "Champagne Glow Highlighter",
     categorySlug: "highlighter",
     collectionSlugs: ["seasonal-holiday-shine", "limited-edition"],
-    price: 24,
+    price: 699,
     description:
       "A finely pressed highlighter delivering a luminous, lit-from-within glow in a warm champagne tone, buildable from subtle to full-intensity shimmer.",
     content: {
@@ -420,7 +420,7 @@ export const PRODUCT_SEEDS: ProductSeed[] = [
     name: "Smooth Canvas Primer",
     categorySlug: "primer",
     collectionSlugs: ["new-arrivals"],
-    price: 22,
+    price: 649,
     description:
       "A silky, pore-blurring primer that creates a smooth base for makeup application, helping foundation glide on evenly and wear longer.",
     content: {
