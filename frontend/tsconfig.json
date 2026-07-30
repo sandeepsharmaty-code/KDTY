@@ -1,5 +1,4 @@
 {
-  "extends": "../config/typescript/tsconfig.base.json",
   "compilerOptions": {
     "target": "ES2022",
     "lib": ["dom", "dom.iterable", "ES2022"],
@@ -10,6 +9,10 @@
     "incremental": true,
     "plugins": [{ "name": "next" }],
     "baseUrl": ".",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
     "paths": {
       "@/*": ["src/*"]
     }
