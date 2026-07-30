@@ -1,15 +1,3 @@
-// Main navigation + footer structure — sourced from the frozen Phase 1
-// Information Architecture (§4 Category Architecture, §12 Footer
-// Architecture). Five main categories, fixed, per Phase 0 scope.
-
-export const MAIN_CATEGORIES = [
-  { id: "nail-collection", slug: "nail-collection", name: "Nail Collection" },
-  { id: "color-cosmetics", slug: "color-cosmetics", name: "Color Cosmetics" },
-  { id: "skincare", slug: "skincare", name: "Skincare" },
-  { id: "hair-care", slug: "hair-care", name: "Hair Care" },
-  { id: "beauty-accessories", slug: "beauty-accessories", name: "Beauty Accessories" },
-] as const;
-
 export interface FooterColumn {
   heading: string;
   links: { label: string; href: string }[];
@@ -19,9 +7,9 @@ export const FOOTER_COLUMNS: FooterColumn[] = [
   {
     heading: "Shop",
     links: [
-      { label: "Nail Collection", href: "/shop/nail-collection" },
-      { label: "Color Cosmetics", href: "/shop/color-cosmetics" },
-      { label: "Skincare", href: "/shop/skincare" },
+      { label: "Nail Lacquer", href: "/shop/nail-lacquer" },
+      { label: "Colour Cosmetics", href: "/shop/colour-cosmetics" },
+      { label: "Skin Care", href: "/shop/skin-care" },
       { label: "Hair Care", href: "/shop/hair-care" },
       { label: "Beauty Accessories", href: "/shop/beauty-accessories" },
       { label: "Collections", href: "/collections" },
