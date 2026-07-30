@@ -2,14 +2,14 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Breadcrumb } from "@/components/patterns/Breadcrumb";
 import { ProductListingGrid } from "@/components/sections/ProductListingGrid";
-import { MOCK_COLLECTIONS, MOCK_PRODUCTS } from "@/services/mock/products";
+import { getCollectionBySlug, getProductsForCollection } from "@/services/api/products";
 
 interface Props {
   params: { slug: string };
 }
 
-export function generateMetadata({ params }: Props): Metadata {
-  const collection = MOCK_COLLECTIONS.find((c) => c.slug === params.slug);
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const collection = await getCollectionBySlug(params.slug);
   if (!collection) return {};
   return {
     title: collection.name,
@@ -18,9 +18,11 @@ export function generateMetadata({ params }: Props): Metadata {
   };
 }
 
-export default function CollectionPage({ params }: Props) {
-  const collection = MOCK_COLLECTIONS.find((c) => c.slug === params.slug);
+export default async function CollectionPage({ params }: Props) {
+  const collection = await getCollectionBySlug(params.slug);
   if (!collection) notFound();
+
+  const products = await getProductsForCollection(params.slug);
 
   return (
     <div className="py-6">
@@ -28,10 +30,7 @@ export default function CollectionPage({ params }: Props) {
       <h1 className="mt-4 font-display text-[32px] leading-10 font-semibold text-ink">{collection.name}</h1>
       <p className="mt-2 max-w-xl text-base text-stone">{collection.tagline}</p>
       <div className="mt-6">
-        {/* Sprint 2 mock: collection membership not modeled — showing full
-            catalog as a stand-in listing. Real collection→product mapping
-            is a Sprint 3+/data concern. */}
-        <ProductListingGrid products={MOCK_PRODUCTS} />
+        <ProductListingGrid products={products} />
       </div>
     </div>
   );
