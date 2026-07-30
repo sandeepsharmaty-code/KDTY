@@ -1,17 +1,15 @@
 "use client";
 import { useState } from "react";
-import Image from "next/image";
 import { Button } from "@/components/basic/Button";
 import { Icon } from "@/components/basic/Icon";
 import { ShadeSelector } from "@/components/composite/ShadeSelector";
 import { QuantitySelector } from "@/components/composite/QuantitySelector";
 import { StarRating } from "@/components/composite/ReviewCard";
 import { Badge } from "@/components/basic/Badge";
+import { ProductSwatchImage } from "@/components/composite/ProductSwatchImage";
 import type { Product } from "@/types/product";
+import { formatCurrency } from "@/utils/formatCurrency";
 
-// Product Detail Summary — Phase 4 §17 Page Section / §10 Product
-// Components (gallery, price, shade selector, quantity, add to cart,
-// wishlist, ratings).
 export function ProductDetailSummary({ product }: { product: Product }) {
   const [quantity, setQuantity] = useState(1);
   const [wishlisted, setWishlisted] = useState(false);
@@ -20,7 +18,7 @@ export function ProductDetailSummary({ product }: { product: Product }) {
   return (
     <div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
       <div className="relative aspect-square overflow-hidden rounded-md bg-paper">
-        <Image src={product.imageUrl} alt={product.imageAlt} fill priority sizes="(max-width: 600px) 100vw, 50vw" className="object-cover" />
+        <ProductSwatchImage product={product} className="absolute inset-0" />
       </div>
 
       <div className="flex flex-col gap-4">
@@ -57,11 +55,11 @@ export function ProductDetailSummary({ product }: { product: Product }) {
         <div className="flex items-baseline gap-2">
           {product.salePrice ? (
             <>
-              <span className="text-[20px] leading-6 font-semibold text-primary-rose">${product.salePrice.toFixed(2)}</span>
-              <span className="text-[13px] leading-[18px] text-stone line-through">${product.price.toFixed(2)}</span>
+              <span className="text-[20px] leading-6 font-semibold text-primary-rose">{formatCurrency(product.salePrice, product.currency)}</span>
+              <span className="text-[13px] leading-[18px] text-stone line-through">{formatCurrency(product.price, product.currency)}</span>
             </>
           ) : (
-            <span className="text-[20px] leading-6 font-semibold text-ink">${product.price.toFixed(2)}</span>
+            <span className="text-[20px] leading-6 font-semibold text-ink">{formatCurrency(product.price, product.currency)}</span>
           )}
         </div>
 
