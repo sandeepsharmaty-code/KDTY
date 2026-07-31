@@ -9,19 +9,13 @@ interface AdminAuthState {
   email: string | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
+  sendOtp: (phoneNumber: string) => Promise<{ devOtp?: string }>;
+  loginWithOtp: (phoneNumber: string, code: string) => Promise<void>;
   logout: () => void;
 }
 
 export const AdminAuthContext = createContext<AdminAuthState | undefined>(undefined);
 
-// Sprint 6B — client-side session state. The token itself lives in
-// localStorage (admin-api-client.ts) so it survives a page refresh;
-// this context re-derives `role`/`email` from what's stored at mount
-// so a refresh doesn't bounce the admin back to /admin/login. This is
-// UI convenience state only — every actual authorization decision is
-// re-verified server-side on each request (Sprint 6A's PermissionsGuard),
-// per this sprint's "enforce RBAC through both UI visibility and
-// backend authorization" constraint.
 export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
   const [role, setRole] = useState<AdminRole | null>(null);
   const [email, setEmail] = useState<string | null>(null);
@@ -46,6 +40,21 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
     router.push("/admin/dashboard");
   }, [router]);
 
+  const sendOtp = useCallback(async (phoneNumber: string) => {
+    const result = await adminApi.sendOtp(phoneNumber);
+    return { devOtp: result.devOtp };
+  }, []);
+
+  const loginWithOtp = useCallback(async (phoneNumber: string, code: string) => {
+    const result = await adminApi.verifyOtp(phoneNumber, code);
+    setToken(result.sessionToken);
+    window.localStorage.setItem("hmb_admin_role", result.role);
+    window.localStorage.setItem("hmb_admin_email", phoneNumber);
+    setRole(result.role as AdminRole);
+    setEmail(phoneNumber);
+    router.push("/admin/dashboard");
+  }, [router]);
+
   const logout = useCallback(() => {
     setToken(null);
     window.localStorage.removeItem("hmb_admin_role");
@@ -56,7 +65,7 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
   }, [router]);
 
   return (
-    <AdminAuthContext.Provider value={{ role, email, isLoading, login, logout }}>
+    <AdminAuthContext.Provider value={{ role, email, isLoading, login, sendOtp, loginWithOtp, logout }}>
       {children}
     </AdminAuthContext.Provider>
   );

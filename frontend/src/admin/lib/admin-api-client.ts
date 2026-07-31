@@ -53,6 +53,16 @@ export const adminApi = {
       method: "POST",
       body: JSON.stringify({ email, password }),
     }),
+  sendOtp: (phoneNumber: string) =>
+    request<{ sent: true; devOtp?: string }>("/admin/auth/otp/send", {
+      method: "POST",
+      body: JSON.stringify({ phoneNumber }),
+    }),
+  verifyOtp: (phoneNumber: string, code: string) =>
+    request<{ sessionToken: string; role: string; expiresAt: string }>("/admin/auth/otp/verify", {
+      method: "POST",
+      body: JSON.stringify({ phoneNumber, code }),
+    }),
 
   // Dashboard
   getDashboardOverview: () => request<DashboardOverview>("/admin/dashboard/overview"),
