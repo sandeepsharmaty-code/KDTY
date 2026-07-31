@@ -31,10 +31,10 @@ export default () => ({
   },
 
   cors: {
-    // Sprint 3.7 — Security: no wildcard origin; frontend dev server only
-    // in Sprint 3 (no deployed origin exists yet — Sprint 3 OUT OF SCOPE
-    // excludes production deployment).
-    origin: process.env.NODE_ENV === "production" ? [] : ["http://localhost:3000"],
+    origin:
+      process.env.NODE_ENV === "production"
+        ? (process.env.CORS_ORIGIN ?? "").split(",").map((o) => o.trim()).filter(Boolean)
+        : ["http://localhost:3000"],
   },
 
   rateLimit: {
