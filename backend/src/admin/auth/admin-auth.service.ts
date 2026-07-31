@@ -45,16 +45,13 @@ export class AdminAuthService {
     const user = await this.adminUsers.findOne({ where: { phoneNumber, active: true } });
     if (!user) return { sent: true };
 
-    await this.sms.sendOtpForPurpose(
+    const code = await this.sms.sendOtpForPurpose(
       phoneNumber,
       ADMIN_OTP_PURPOSE,
       "Your Hue Muse Beauty admin login code is {code}. It expires in 5 minutes.",
     );
     if (this.sms.getProvider() instanceof MockSmsProvider) {
-      const messages = (this.sms.getProvider() as MockSmsProvider).getSentMessages();
-      const latest = messages.find((m) => m.to === phoneNumber);
-      const match = latest?.message.match(/code is (\d{6})/);
-      if (match) return { sent: true, devOtp: match[1] };
+      return { sent: true, devOtp: code };
     }
     return { sent: true };
   }

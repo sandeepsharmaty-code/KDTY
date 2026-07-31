@@ -27,9 +27,10 @@ export class SmsService {
     return this.otp.verify(phoneNumber, "login", code);
   }
 
-  async sendOtpForPurpose(phoneNumber: string, purpose: string, message: string): Promise<void> {
+  async sendOtpForPurpose(phoneNumber: string, purpose: string, message: string): Promise<string> {
     const code = await this.otp.generate(phoneNumber, purpose);
     await this.enqueue(phoneNumber, message.replace("{code}", code));
+    return code;
   }
 
   async sendOrderConfirmationSms(phoneNumber: string, orderId: string): Promise<void> {
