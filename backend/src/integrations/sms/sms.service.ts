@@ -6,9 +6,6 @@ import { OtpService } from "./otp.service";
 import { QUEUE_NAMES } from "@/integrations/queue/queue.constants";
 import { DomainErrorCode, DomainException } from "@/common/exceptions/domain.exception";
 
-// Sprint 5.5 — SmsService: login OTP, order notifications, delivery
-// notifications, all queue-first (same reasoning as EmailService —
-// Sprint 5.8's "Queue support").
 @Injectable()
 export class SmsService {
   constructor(
@@ -21,7 +18,6 @@ export class SmsService {
     await this.smsQueue.add("send-sms", { to, message });
   }
 
-  // Sprint 5.5 — Login OTP.
   async sendLoginOtp(phoneNumber: string): Promise<void> {
     const code = await this.otp.generate(phoneNumber, "login");
     await this.enqueue(phoneNumber, `Your Hue Muse Beauty login code is ${code}. It expires in 5 minutes.`);
@@ -31,12 +27,15 @@ export class SmsService {
     return this.otp.verify(phoneNumber, "login", code);
   }
 
-  // Sprint 5.5 — Order notifications.
+  async sendOtpForPurpose(phoneNumber: string, purpose: string, message: string): Promise<void> {
+    const code = await this.otp.generate(phoneNumber, purpose);
+    await this.enqueue(phoneNumber, message.replace("{code}", code));
+  }
+
   async sendOrderConfirmationSms(phoneNumber: string, orderId: string): Promise<void> {
     await this.enqueue(phoneNumber, `Your Hue Muse Beauty order #${orderId} is confirmed.`);
   }
 
-  // Sprint 5.5 — Delivery notifications.
   async sendDeliveryNotification(phoneNumber: string, orderId: string): Promise<void> {
     await this.enqueue(phoneNumber, `Your Hue Muse Beauty order #${orderId} has been delivered!`);
   }

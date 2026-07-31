@@ -32,18 +32,26 @@ async function run() {
 
   const adminRepo = dataSource.getRepository(AdminUserEntity);
   const existingAdmin = await adminRepo.findOne({ where: { email: "admin@huemusebeauty.local" } });
-  if (!existingAdmin && !dryRun) {
-    await adminRepo.save(
-      adminRepo.create({
-        email: "admin@huemusebeauty.local",
-        passwordHash: await hashPassword("ChangeMe123!"),
-        firstName: "Super",
-        lastName: "Admin",
-        role: AdminRole.SUPER_ADMIN,
-        active: true,
-      }),
-    );
-    console.log("Seeded 1 Super Admin account (admin@huemusebeauty.local / ChangeMe123! -- change immediately in any non-local environment).");
+  const ADMIN_PHONE_PLACEHOLDER = "+919999999999";
+  if (!dryRun) {
+    if (!existingAdmin) {
+      await adminRepo.save(
+        adminRepo.create({
+          email: "admin@huemusebeauty.local",
+          phoneNumber: ADMIN_PHONE_PLACEHOLDER,
+          passwordHash: await hashPassword("ChangeMe123!"),
+          firstName: "Super",
+          lastName: "Admin",
+          role: AdminRole.SUPER_ADMIN,
+          active: true,
+        }),
+      );
+      console.log("Seeded 1 Super Admin account (admin@huemusebeauty.local / ChangeMe123! -- change immediately in any non-local environment).");
+    } else if (!existingAdmin.phoneNumber) {
+      existingAdmin.phoneNumber = ADMIN_PHONE_PLACEHOLDER;
+      await adminRepo.save(existingAdmin);
+      console.log(`Set placeholder phone number ${ADMIN_PHONE_PLACEHOLDER} on existing Super Admin account -- update to the real number before relying on OTP login.`);
+    }
   }
 
   const providersModuleRef = app.select(SeedProvidersModule);
