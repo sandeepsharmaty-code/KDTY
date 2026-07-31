@@ -6,13 +6,12 @@ import { Repository } from "typeorm";
 import { AdminUserEntity } from "./entities/admin-user.entity";
 import { verifyPassword } from "@/modules/auth/password.util";
 import { AuditLogService } from "@/admin/audit/audit-log.service";
+import { OtpService } from "@/integrations/sms/otp.service";
+import { SmsService } from "@/integrations/sms/sms.service";
+import { MockSmsProvider } from "@/integrations/sms/providers/mock-sms.provider";
 
-// Sprint 6 — Admin authentication. Deliberately login-only: admin user
-// creation/provisioning is a seed/manual-operator concern (Phase 6 §12
-// — "User Roles" management is itself Super-Admin-only, so there's no
-// public admin self-registration endpoint), not a self-service flow.
-// See src/database/seeds/run-seed.ts for how the first Super Admin is
-// created.
+const ADMIN_OTP_PURPOSE = "admin_login";
+
 @Injectable()
 export class AdminAuthService {
   constructor(
@@ -20,18 +19,14 @@ export class AdminAuthService {
     private readonly jwt: JwtService,
     private readonly config: ConfigService,
     private readonly auditLog: AuditLogService,
+    private readonly otp: OtpService,
+    private readonly sms: SmsService,
   ) {}
 
   async login(email: string, password: string): Promise<{ sessionToken: string; role: string; expiresAt: Date }> {
     const user = await this.adminUsers.findOne({ where: { email } });
     const isValid = Boolean(user?.active) && (await verifyPassword(password, user?.passwordHash ?? ""));
 
-    // Sprint 6 §15 — Login Activity: both successful AND failed
-    // attempts are logged, per Phase 6 §15/§16's security review
-    // support — a failed attempt is recorded against the attempted
-    // email even though no AdminUserEntity match may exist, since a
-    // string of failed attempts against one email is itself the
-    // signal worth having.
     await this.auditLog.record({
       actorId: user?.id ?? "unknown",
       actorEmail: email,
@@ -43,6 +38,46 @@ export class AdminAuthService {
       throw new UnauthorizedException("Invalid email or password.");
     }
 
+    return this.issueSession(user);
+  }
+
+  async sendOtp(phoneNumber: string): Promise<{ sent: true; devOtp?: string }> {
+    const user = await this.adminUsers.findOne({ where: { phoneNumber, active: true } });
+    if (!user) return { sent: true };
+
+    await this.sms.sendOtpForPurpose(
+      phoneNumber,
+      ADMIN_OTP_PURPOSE,
+      "Your Hue Muse Beauty admin login code is {code}. It expires in 5 minutes.",
+    );
+    if (this.sms.getProvider() instanceof MockSmsProvider) {
+      const messages = (this.sms.getProvider() as MockSmsProvider).getSentMessages();
+      const latest = messages.find((m) => m.to === phoneNumber);
+      const match = latest?.message.match(/code is (\d{6})/);
+      if (match) return { sent: true, devOtp: match[1] };
+    }
+    return { sent: true };
+  }
+
+  async verifyOtp(phoneNumber: string, code: string): Promise<{ sessionToken: string; role: string; expiresAt: Date }> {
+    const user = await this.adminUsers.findOne({ where: { phoneNumber, active: true } });
+    const isValid = Boolean(user) && (await this.otp.verify(phoneNumber, ADMIN_OTP_PURPOSE, code));
+
+    await this.auditLog.record({
+      actorId: user?.id ?? "unknown",
+      actorEmail: user?.email ?? phoneNumber,
+      module: "auth",
+      action: isValid ? "login_success" : "login_failure",
+    });
+
+    if (!isValid || !user) {
+      throw new UnauthorizedException("Invalid or expired code.");
+    }
+
+    return this.issueSession(user);
+  }
+
+  private async issueSession(user: AdminUserEntity): Promise<{ sessionToken: string; role: string; expiresAt: Date }> {
     user.lastLoginAt = new Date();
     await this.adminUsers.save(user);
 

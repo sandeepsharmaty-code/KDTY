@@ -6,11 +6,13 @@ import { AdminUserEntity } from "./entities/admin-user.entity";
 import { AdminAuthService } from "./admin-auth.service";
 import { AdminAuthController } from "./admin-auth.controller";
 import { AuditModule } from "@/admin/audit/audit.module";
+import { SmsModule } from "@/integrations/sms/sms.module";
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([AdminUserEntity]),
     AuditModule,
+    SmsModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
