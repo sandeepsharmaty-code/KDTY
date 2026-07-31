@@ -4,7 +4,7 @@
 // validation, no computation, no state transitions of its own — every
 // method is a thin typed wrapper over one backend endpoint documented
 // in docs/admin/API_REFERENCE.md.
-const API_BASE = process.env.NEXT_PUBLIC_ADMIN_API_URL ?? "http://localhost:4000/v1";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/v1";
 
 export class AdminApiError extends Error {
   constructor(public readonly status: number, public readonly errorCode: string, message: string) {
